@@ -108,6 +108,31 @@ func saveToCSV(students map[int]Student, filePath string) error {
 	return nil
 }
 
+// update field with safety check
+func updateStudentField(students map[int]Student, studentID int, field, newValue string) error {
+	// Check if the studentID exists in the map
+	student, exists := students[studentID]
+	if !exists {
+		return fmt.Errorf("student does not exist %d", studentID)
+	}
+
+	switch field {
+	case "FirstName":
+		student.FirstName = newValue
+	case "LastName":
+		student.LastName = newValue
+	case "Certificate":
+		student.Certificate = newValue
+	case "Notes":
+		student.Notes = newValue
+	default:
+		return fmt.Errorf("invalid field: %s", field)
+	}
+
+	students[studentID] = student
+	return nil
+}
+
 func main() {
 	students, err := joinCSVs("student_list.csv", "student_notes.csv")
 	if err != nil {
@@ -126,6 +151,10 @@ func main() {
 	for id := 1; id < len(students); id++ {
 		fmt.Printf("StudentID: %d, Name: %s, Surname: %s, Certificate: %s, Notes: %s\n", id, students[id].FirstName, students[id].LastName, students[id].Certificate, students[id].Notes)
 	}
+
+	//update field
+	updateStudentField(students, 1, "FirstName", "John")
+	updateStudentField(students, 1, "Notes", "THIS IS JOHNY BEEEEEE")
 
 	//print fews
 	fmt.Println("print fews")

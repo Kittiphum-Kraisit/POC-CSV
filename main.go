@@ -78,13 +78,13 @@ func saveToCSV(students map[int]Student, filePath string) error {
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	// Headers, not nessary
+	// Headers, not necessary
 	header := []string{"StudentID", "FirstName", "LastName", "Certificate", "Notes"}
 	if err := writer.Write(header); err != nil {
 		return err
 	}
 
-	// Sort ID, also not nessary
+	// Sort ID, also not necessary
 	var ids []int
 	for id := range students {
 		ids = append(ids, id)

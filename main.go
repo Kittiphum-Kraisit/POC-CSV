@@ -134,7 +134,7 @@ func updateStudentField(students map[int]Student, studentID int, field, newValue
 }
 
 func main() {
-	students, err := joinCSVs("student_list.csv", "student_notes.csv")
+	students, err := joinCSVs("student_list_big.csv", "student_notes_big.csv")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -148,7 +148,7 @@ func main() {
 
 	//print all, with order
 	fmt.Println("print all, with order")
-	for id := 1; id < len(students); id++ {
+	for id := 1; id <= len(students); id++ {
 		fmt.Printf("StudentID: %d, Name: %s, Surname: %s, Certificate: %s, Notes: %s\n", id, students[id].FirstName, students[id].LastName, students[id].Certificate, students[id].Notes)
 	}
 

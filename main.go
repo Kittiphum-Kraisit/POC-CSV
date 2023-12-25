@@ -4,9 +4,11 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Student struct {
@@ -134,11 +136,22 @@ func updateStudentField(students map[int]Student, studentID int, field, newValue
 }
 
 func main() {
+	startTime := time.Now()
+	var mStart runtime.MemStats
+	runtime.ReadMemStats(&mStart)
+
 	students, err := joinCSVs("student_list_big.csv", "student_notes_big.csv")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
+	elapsed := time.Since(startTime)
+	var mEnd runtime.MemStats
+	runtime.ReadMemStats(&mEnd)
+
+	// Calculate memory usage
+	memoryUsed := mEnd.Alloc - mStart.Alloc // bytes
 
 	//print all, no order
 	// fmt.Println("print all")
@@ -147,7 +160,7 @@ func main() {
 	// }
 
 	//print all, with order
-	fmt.Println("print all, with order")
+	fmt.Println("\nprint all, with order")
 	for id := 1; id <= len(students); id++ {
 		fmt.Printf("StudentID: %d, Name: %s, Surname: %s, Certificate: %s, Notes: %s\n", id, students[id].FirstName, students[id].LastName, students[id].Certificate, students[id].Notes)
 	}
@@ -157,12 +170,17 @@ func main() {
 	updateStudentField(students, 1, "Notes", "THIS IS JOHNY BEEEEEE")
 
 	//print fews
-	fmt.Println("print fews")
+	fmt.Println("\nprint fews")
 	fmt.Println(students[1], students[100], students[1000])
 
 	//print specific field
 	fmt.Println("print specific field")
 	fmt.Println(students[1].FirstName, students[1].LastName)
+
+	//mem used
+	fmt.Printf("\nResource usages: \n")
+	fmt.Printf("Time taken: %s\n", elapsed)
+	fmt.Printf("Memory used: %.2f MB\n", float64(memoryUsed)/1024/1024)
 
 	//can also write to existing CSV, it will replace all data
 	saveToCSV(students, "result.csv")

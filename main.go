@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -67,6 +68,46 @@ func joinCSVs(file1, file2 string) (map[int]Student, error) {
 	return result, nil
 }
 
+func saveToCSV(students map[int]Student, filePath string) error {
+	file, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// Headers, not nessary
+	header := []string{"StudentID", "FirstName", "LastName", "Certificate", "Notes"}
+	if err := writer.Write(header); err != nil {
+		return err
+	}
+
+	// Sort ID, also not nessary
+	var ids []int
+	for id := range students {
+		ids = append(ids, id)
+	}
+	sort.Ints(ids)
+
+	for _, id := range ids {
+		student := students[id]
+		record := []string{
+			strconv.Itoa(student.StudentID),
+			student.FirstName,
+			student.LastName,
+			student.Certificate,
+			student.Notes,
+		}
+		if err := writer.Write(record); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func main() {
 	students, err := joinCSVs("student_list.csv", "student_notes.csv")
 	if err != nil {
@@ -94,4 +135,6 @@ func main() {
 	fmt.Println("print specific field")
 	fmt.Println(students[1].FirstName, students[1].LastName)
 
+	//can also write to existing CSV, it will replace all data
+	saveToCSV(students, "result.csv")
 }
